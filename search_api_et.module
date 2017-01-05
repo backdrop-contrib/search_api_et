@@ -549,3 +549,20 @@ function search_api_et_search_api_index_items_alter(array &$items, SearchApiInde
     }
   }
 }
+
+/**
+ * Implements hook_search_api_index_reindex().
+ */
+function search_api_et_search_api_index_reindex(SearchApiIndex $index, $clear = FALSE) {
+  // Search api Entity translation use a custom table for indexation. This table
+  // should be cleared when reindex is processed.
+  // Otherwise, some residual content or wrong content can persist.
+  if ($clear) {
+    // Index has to be cleared.
+    db_delete('search_api_et_item')
+      ->condition('index_id', $index->id)
+      ->execute();
+    // Add every items to queue so they will be indexed again.
+    $index->queueItems();
+  }
+}

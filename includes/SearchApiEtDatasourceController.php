@@ -80,7 +80,8 @@ class SearchApiEtDatasourceController extends SearchApiEntityDataSourceControlle
           $entity = clone $entities[$entity_id];
           $id = !empty($language) ? SearchApiEtHelper::buildItemId($entity_id, $language) : $entity_id;
           $entity->search_api_et_id = $id;
-          $entity->language = $language;
+          // Keep current entity language if language is NULL.
+          $entity->language = !is_null($language) ? $language : $entity->language;
           $items[$id] = $entity;
         }
       }

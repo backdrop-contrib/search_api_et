@@ -1,5 +1,6 @@
 SearchAPI ET 7.x-2.x, xxxx-xx-xx
 --------------------------------
+- Issue #2833126 by GoZ: Purge search_api_et and reindex items
 
 SearchAPI ET 7.x-2.0-alpha7, 2016-08-02
 ---------------------------------------
