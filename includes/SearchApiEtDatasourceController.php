@@ -219,7 +219,9 @@ class SearchApiEtDatasourceController extends SearchApiEntityDataSourceControlle
    * index changes, to take care of new and/or out-dated IDs.
    */
   public function startTracking(array $indexes) {
-    if (!$this->table) {
+    // In case an index is inserted during a site install, a batch is active
+    // so we skip this.
+    if (!$this->table || batch_get()) {
       return;
     }
     // We first clear the tracking table for all indexes, so we can just insert
@@ -239,6 +241,11 @@ class SearchApiEtDatasourceController extends SearchApiEntityDataSourceControlle
           array($index, $entity_ids, $step),
         );
       }
+    }
+
+    if (empty($operations)) {
+      // There is nothing to track yet: abort.
+      return;
     }
 
     // This might be called both from web interface as well as from drush.
