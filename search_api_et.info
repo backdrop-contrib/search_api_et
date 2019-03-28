@@ -16,3 +16,4 @@ files[] = includes/SearchApiEtDatasourceController.php
 files[] = includes/SearchApiEtHelper.php
 files[] = includes/SearchApiEtPropertyInfoAlter.php
 files[] = includes/SearchApiEtViewsQuery.php
+files[] = tests/search_api_et.test
