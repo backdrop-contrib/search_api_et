@@ -310,9 +310,19 @@ function search_api_et_entity_delete($entity, $entity_type) {
     return;
   }
 
-  list($entity_id, $revision, $bundle) = entity_extract_ids($entity_type, $entity);
-  // Passing the EntityID only, so every index can properly handle their translations.
-  search_api_track_item_delete(SearchApiEtHelper::getItemType($entity_type), array($entity_id));
+  // On delete, remove all translations of the entity from the index.
+  $item_ids = array();
+  $translation_handler = entity_translation_get_handler($entity_type, $entity);
+  $translations = $translation_handler->getTranslations();
+  if (empty($translations->data)) {
+    return;
+  }
+  foreach ($translations->data as $lang_code => $entity_data) {
+    $item_ids[] = SearchApiEtHelper::buildItemId($entity_data['entity_id'], $lang_code);
+  }
+  if (!empty($item_ids)) {
+    search_api_track_item_delete(SearchApiEtHelper::getItemType($entity_type), $item_ids);
+  }
 }
 
 /**

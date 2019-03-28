@@ -46,11 +46,34 @@ class SearchApiEtTestCase extends EntityTranslationTestCase {
 
     $item_id = SearchApiEtHelper::buildItemId($node->nid, 'en');
     $this->assertTrue($this->itemIdExists($item_id));
+    $this->assertTrue($this->itemIdExistsOnBackend($item_id));
 
     // Delete the Basic page.
     $edit = array();
     $this->drupalPost('node/' . $node->nid . '/delete', $edit, t('Delete'));
     $this->assertTrue($this->itemIdNotExists($item_id));
+    $this->assertTrue($this->itemIdNotExistsOnBackend($item_id));
+
+    // Create a second page in Language neutral.
+    $node_title = $this->randomName();
+    $node_body = $this->randomName();
+    $edit = array(
+      'title' => $node_title,
+      "body[en][0][value]" => $node_body,
+      'language' => LANGUAGE_NONE,
+    );
+    $this->drupalPost('node/add/page', $edit, t('Save'));
+    $node2 = $this->drupalGetNodeByTitle($node_title);
+
+    $item_id = SearchApiEtHelper::buildItemId($node2->nid, LANGUAGE_NONE);
+    $this->assertTrue($this->itemIdExists($item_id));
+    $this->assertTrue($this->itemIdExistsOnBackend($item_id));
+
+    // Delete the second page.
+    $edit = array();
+    $this->drupalPost('node/' . $node2->nid . '/delete', $edit, t('Delete'));
+    $this->assertTrue($this->itemIdNotExists($item_id));
+    $this->assertTrue($this->itemIdNotExistsOnBackend($item_id));
   }
 
   /**
@@ -72,6 +95,25 @@ class SearchApiEtTestCase extends EntityTranslationTestCase {
   }
 
   /**
+   * Checks if a Search API Entity item is indexed on the backend.
+   *
+   * @param string $item_id
+   *   A Search API Entity translation id, eg. 2/en, or a generic Search API
+   *   item id, eg. 2.
+   *
+   * @return bool
+   *   TRUE if an item_id exists, otherwise FALSE.
+   */
+  protected function itemIdExistsOnBackend($item_id) {
+    $result = db_select('search_api_db_test_index', 's')
+      ->fields('s', array('item_id'))
+      ->condition('s.item_id', $item_id)
+      ->execute()
+      ->fetchField();
+    return $result === $item_id;
+  }
+
+  /**
    * Checks if a Search API Entity translation item id is not indexed.
    *
    * @param string $item_id
@@ -82,6 +124,25 @@ class SearchApiEtTestCase extends EntityTranslationTestCase {
    */
   protected function itemIdNotExists($item_id) {
     $result = db_select('search_api_et_item', 's')
+      ->fields('s', array('item_id'))
+      ->condition('s.item_id', $item_id)
+      ->execute()
+      ->fetchField();
+    return empty($result);
+  }
+
+  /**
+   * Checks if a Search API item is not indexed on the backend.
+   *
+   * @param string $item_id
+   *   A Search API Entity translation id, eg. 2/en, or a generic Search API
+   *   item id, eg. 2.
+   *
+   * @return bool
+   *   TRUE if an item_id exists, otherwise FALSE.
+   */
+  protected function itemIdNotExistsOnBackend($item_id) {
+    $result = db_select('search_api_db_test_index', 's')
       ->fields('s', array('item_id'))
       ->condition('s.item_id', $item_id)
       ->execute()
