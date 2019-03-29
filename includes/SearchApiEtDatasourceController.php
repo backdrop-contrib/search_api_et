@@ -313,7 +313,7 @@ class SearchApiEtDatasourceController extends SearchApiEntityDataSourceControlle
       // hook: search_api_et_entity_update(). In this case we need to, for each
       // Index, identify the set of ItemIDs that need to be marked as changed.
       // Check if we get Entity IDs or Item IDs.
-      $ids = $this->getTrackableItemIdsFromMixedSource($index, $item_ids);
+      $ids = $this->filterTrackableIds($index, $item_ids);
 
       if (!empty($ids)) {
         parent::trackItemChange($ids, array($index), $dequeue);

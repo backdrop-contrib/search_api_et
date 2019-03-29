@@ -1,5 +1,7 @@
 SearchAPI ET 7.x-2.x, xxxx-xx-xx
 --------------------------------
+- Issue #2823669 by idebr, TuWebO, patrik.hultgren, GoZ, jseffel, thePanz: Duplicate documents while updating a node
+- Issue #2811811 by idebr, Lendude, kporras07, joel_osc, david.lopez: Items are not getting deleted from search_api server
 - Issue #3036355 by idebr: Introduce an automated functional test
 - Issue #2860146 by Grayle: Do not trigger a batch in startTracking() when installing a site
 - Issue #3043753 by idebr: Commit test dependencies to enable automated testing

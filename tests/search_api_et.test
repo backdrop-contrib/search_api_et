@@ -48,6 +48,10 @@ class SearchApiEtTestCase extends EntityTranslationTestCase {
     $this->assertTrue($this->itemIdExists($item_id));
     $this->assertTrue($this->itemIdExistsOnBackend($item_id));
 
+    // Update without any changes.
+    $this->drupalPost('node/' . $node->nid . '/edit', array(), t('Save'));
+    $this->assertTrue($this->itemIdNotExistsOnBackend($node->nid));
+
     // Delete the Basic page.
     $edit = array();
     $this->drupalPost('node/' . $node->nid . '/delete', $edit, t('Delete'));
