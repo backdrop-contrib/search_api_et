@@ -363,11 +363,31 @@ class SearchApiEtDatasourceController extends SearchApiEntityDataSourceControlle
    */
   public function trackItemDelete(array $item_ids, array $indexes) {
     $ret = array();
+
+    $search_api_et_ids = array();
+    $ids_to_expand = array();
+    foreach ($item_ids as $item_id) {
+      // If this is a valid Search API ET ID just use it as is.
+      if (SearchApiEtHelper::isValidItemId($item_id)) {
+        $search_api_et_ids[] = $item_id;
+      }
+      else {
+        // The $item_ids can contain also single entity ID if we get invoked
+        // from search_api_entity_delete(). In this case we need to, for each
+        // Index, identify the set of Item IDs that need to be marked as
+        // deleted. This has to be done index specific - so we collect the IDs
+        // to process and handle them in the index loop.
+        $ids_to_expand[] = $item_id;
+      }
+    }
+
     foreach ($indexes as $index_id => $index) {
-      // The $item_ids can contain also single EntityID if we get invoked from the
-      // hook: search_api_et_entity_delete(). In this case we need to, for each
-      // Index, identify the set of ItemIDs that need to be marked as changed.
-      $ids = $this->getTrackableItemIdsFromMixedSource($index, $item_ids);
+      // Collect all the IDs to delete, expand non search-api-et IDs according
+      // to the index.
+      $ids = $search_api_et_ids;
+      if (!empty($ids_to_expand)) {
+        $ids = array_merge($ids, $this->getTrackableItemIdsFromMixedSource($index, $ids_to_expand));
+      }
 
       if ($ids) {
         parent::trackItemDelete($ids, array($index));

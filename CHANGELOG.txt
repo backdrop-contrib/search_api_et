@@ -1,5 +1,7 @@
 SearchAPI ET 7.x-2.x, xxxx-xx-xx
 --------------------------------
+- Issue #2953473 by idebr, das-peter: All tracking items deleted when deleting single translation
+- Issue #2924846 by das-peter: Wrong language detection used in search_api_et_entity_update()
 - Issue #2823669 by idebr, TuWebO, patrik.hultgren, GoZ, jseffel, thePanz: Duplicate documents while updating a node
 - Issue #2811811 by idebr, Lendude, kporras07, joel_osc, david.lopez: Items are not getting deleted from search_api server
 - Issue #3036355 by idebr: Introduce an automated functional test

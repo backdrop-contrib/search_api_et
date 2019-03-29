@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Tests for Search API Entity Translation.
+ */
+
+/**
  * Tests adding, updating and deleting multilingual Search API items.
  */
 class SearchApiEtTestCase extends EntityTranslationTestCase {
@@ -78,6 +83,25 @@ class SearchApiEtTestCase extends EntityTranslationTestCase {
     $this->drupalPost('node/' . $node2->nid . '/delete', $edit, t('Delete'));
     $this->assertTrue($this->itemIdNotExists($item_id));
     $this->assertTrue($this->itemIdNotExistsOnBackend($item_id));
+
+    // Add Basic page with translations.
+    $node = $this->createPage($this->randomName(), $this->randomName(), 'en');
+    $en_item_id = SearchApiEtHelper::buildItemId($node->nid, 'en');
+    $this->assertTrue($this->itemIdExists($en_item_id));
+    $this->assertTrue($this->itemIdExistsOnBackend($en_item_id));
+
+    // Add a French translation.
+    $this->createTranslation($node, $node_title, $this->randomName(), 'fr');
+    $fr_item_id = SearchApiEtHelper::buildItemId($node->nid, 'fr');
+    $this->assertTrue($this->itemIdExists($fr_item_id));
+    $this->assertTrue($this->itemIdExistsOnBackend($fr_item_id));
+
+    // Delete the French translation.
+    $this->deleteTranslation($node, 'fr');
+    $this->assertTrue($this->itemIdExists($en_item_id));
+    $this->assertTrue($this->itemIdExistsOnBackend($en_item_id));
+    $this->assertTrue($this->itemIdNotExists($fr_item_id));
+    $this->assertTrue($this->itemIdNotExistsOnBackend($fr_item_id));
   }
 
   /**
@@ -226,6 +250,19 @@ class SearchApiEtTestCase extends EntityTranslationTestCase {
     $index = entity_create('search_api_index', $values);
     $success = (bool) $index->save();
     $this->assertTrue($success, 'The index was successfully created.');
+  }
+
+  /**
+   * Deletes a node translation.
+   *
+   * @param object $node
+   *   Node of the basic page to delete translation for.
+   * @param string $langcode
+   *   The language code of the translation to be removed.
+   */
+  protected function deleteTranslation($node, $langcode) {
+    $this->drupalPost('node/' . $node->nid . '/translate/delete/' . $langcode, array(), t('Delete'));
+    $this->assertNoLinkByHref('node/' . $node->nid . '/edit/' . $langcode, 0, t('Translation edit link not found. Translation deleted.'));
   }
 
 }

@@ -299,32 +299,6 @@ function search_api_et_item_languages($entity, $entity_type, SearchApiIndex $ind
   return $languages;
 }
 
-
-/**
- * Implements hook_entity_delete().
- */
-function search_api_et_entity_delete($entity, $entity_type) {
-  // We only react on entity operations for types with property information, as
-  // we don't provide search integration for the others.
-  if (!entity_get_property_info($entity_type)) {
-    return;
-  }
-
-  // On delete, remove all translations of the entity from the index.
-  $item_ids = array();
-  $translation_handler = entity_translation_get_handler($entity_type, $entity);
-  $translations = $translation_handler->getTranslations();
-  if (empty($translations->data)) {
-    return;
-  }
-  foreach ($translations->data as $lang_code => $entity_data) {
-    $item_ids[] = SearchApiEtHelper::buildItemId($entity_data['entity_id'], $lang_code);
-  }
-  if (!empty($item_ids)) {
-    search_api_track_item_delete(SearchApiEtHelper::getItemType($entity_type), $item_ids);
-  }
-}
-
 /**
  * Implements hook_entity_update().
  */
@@ -338,8 +312,24 @@ function search_api_et_entity_update($entity, $entity_type) {
   list($entity_id, $revision, $bundle) = entity_extract_ids($entity_type, $entity);
   $et_entity_type = SearchApiEtHelper::getItemType($entity_type);
 
-  $language = entity_language($entity_type, $entity);
-  $old_language = entity_language($entity_type, $entity->original);
+  // Use the translation handler to fetch the main language of the entity.
+  // entity_language() together with entity_translation returns the current
+  // form language of an entity. Hence if the entity is translated the form
+  // language usually differs from the main language - what would lead to the
+  // removal of a valid tracking language.
+  if (!isset($entity->original) || !is_object($entity->original)) {
+    $entity->original = entity_load_unchanged($entity_type, $entity_id);
+  }
+  if (entity_translation_enabled($entity_type, $entity)) {
+    $translation_handler = entity_translation_get_handler($entity_type, $entity);
+    $translation_handler_original = entity_translation_get_handler($entity_type, $entity->original);
+    $language = $translation_handler->getLanguage();
+    $old_language = $translation_handler_original->getLanguage();
+  }
+  else {
+    $language = entity_language($entity_type, $entity);
+    $old_language = entity_language($entity_type, $entity->original);
+  }
 
   // Check if the Entity language has been changed.
   if (!empty($language) && !empty($old_language)) {
