@@ -206,7 +206,9 @@ class SearchApiEtDatasourceController extends SearchApiEntityDataSourceControlle
    * {@inheritdoc}
    */
   public function getItemId($item) {
-    return isset($item->search_api_et_id) ? $item->search_api_et_id : NULL;
+    $entity_id = parent::getItemId($item);
+    $language = entity_language($this->entityType, $item);
+    return $language ? SearchApiEtHelper::buildItemId($entity_id, $language) : $entity_id;
   }
 
   /**
