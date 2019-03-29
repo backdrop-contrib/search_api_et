@@ -1,4 +1,4 @@
-SearchAPI ET 7.x-2.x, xxxx-xx-xx
+SearchAPI ET 7.x-2.0-alpha8, 2019-03-29
 --------------------------------
 - Issue #2715115 by GaëlG, drunken monkey: Fix getItemId() to always return an ID
 - Issue #2809307 by idebr, GoZ: Change language do not delete the old language from index
