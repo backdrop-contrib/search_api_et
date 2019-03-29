@@ -348,6 +348,8 @@ class SearchApiEtDatasourceController extends SearchApiEntityDataSourceControlle
 
     $ids = array();
     $entity_type = $index->getEntityType();
+    $entity_controller = entity_get_controller($entity_type);
+    $entity_controller->resetCache($entity_ids);
     $entities = entity_load($entity_type, $entity_ids);
     foreach ($entities as $entity_id => $entity) {
       foreach (search_api_et_item_languages($entity, $entity_type, $index) as $lang) {

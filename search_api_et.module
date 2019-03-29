@@ -322,8 +322,8 @@ function search_api_et_entity_update($entity, $entity_type) {
   }
   if (entity_translation_enabled($entity_type, $entity)) {
     $translation_handler = entity_translation_get_handler($entity_type, $entity);
-    $translation_handler_original = entity_translation_get_handler($entity_type, $entity->original);
     $language = $translation_handler->getLanguage();
+    $translation_handler_original = entity_translation_get_handler($entity_type, $entity->original);
     $old_language = $translation_handler_original->getLanguage();
   }
   else {
@@ -331,16 +331,14 @@ function search_api_et_entity_update($entity, $entity_type) {
     $old_language = entity_language($entity_type, $entity->original);
   }
 
-  // Check if the Entity language has been changed.
-  if (!empty($language) && !empty($old_language)) {
-    // If the Entity language has changed, remove the old tracked Item from the index.
-    if ($language != $old_language) {
-      search_api_track_item_delete($et_entity_type, array(SearchApiEtHelper::buildItemId($entity_id, $old_language)));
-    }
+  // If the entity language has changed, remove the old item from the index.
+  if (!empty($language) && !empty($old_language) && $language !== $old_language) {
+    search_api_track_item_delete($et_entity_type, array(SearchApiEtHelper::buildItemId($entity_id, $old_language)));
+    search_api_track_item_insert($et_entity_type, array(SearchApiEtHelper::buildItemId($entity_id, $language)));
   }
-
-  // Passing the EntityID only, so every index can properly handle their translations.
-  search_api_track_item_change($et_entity_type, array(SearchApiEtHelper::buildItemId($entity_id, $language)));
+  else {
+    search_api_track_item_change($et_entity_type, array(SearchApiEtHelper::buildItemId($entity_id, $language)));
+  }
 }
 
 /**

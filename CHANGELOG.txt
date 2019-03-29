@@ -1,5 +1,6 @@
 SearchAPI ET 7.x-2.x, xxxx-xx-xx
 --------------------------------
+- Issue #2809307 by idebr, GoZ: Change language do not delete the old language from index
 - Issue #2953473 by idebr, das-peter: All tracking items deleted when deleting single translation
 - Issue #2924846 by das-peter: Wrong language detection used in search_api_et_entity_update()
 - Issue #2823669 by idebr, TuWebO, patrik.hultgren, GoZ, jseffel, thePanz: Duplicate documents while updating a node

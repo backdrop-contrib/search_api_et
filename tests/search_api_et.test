@@ -102,6 +102,18 @@ class SearchApiEtTestCase extends EntityTranslationTestCase {
     $this->assertTrue($this->itemIdExistsOnBackend($en_item_id));
     $this->assertTrue($this->itemIdNotExists($fr_item_id));
     $this->assertTrue($this->itemIdNotExistsOnBackend($fr_item_id));
+
+    // Add Basic page and change its source language.
+    $node = $this->createPage($this->randomName(), $this->randomName(), 'en');
+    $en_item_id = SearchApiEtHelper::buildItemId($node->nid, 'en');
+    $this->assertTrue($this->itemIdExists($en_item_id));
+    $this->assertTrue($this->itemIdExistsOnBackend($en_item_id));
+    $this->drupalPost('node/' . $node->nid . '/edit', array('language' => 'fr'), t('Save'));
+    $fr_item_id = SearchApiEtHelper::buildItemId($node->nid, 'fr');
+    $this->assertTrue($this->itemIdExists($fr_item_id));
+    $this->assertTrue($this->itemIdExistsOnBackend($fr_item_id));
+    $this->assertTrue($this->itemIdNotExists($en_item_id));
+    $this->assertTrue($this->itemIdNotExistsOnBackend($en_item_id));
   }
 
   /**
