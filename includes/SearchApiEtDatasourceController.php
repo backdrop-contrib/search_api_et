@@ -207,7 +207,8 @@ class SearchApiEtDatasourceController extends SearchApiEntityDataSourceControlle
    */
   public function getItemId($item) {
     $entity_id = parent::getItemId($item);
-    $language = entity_language($this->entityType, $item);
+    $translation_handler = entity_translation_get_handler($this->entityType, $item);
+    $language = $translation_handler->getLanguage();
     return $language ? SearchApiEtHelper::buildItemId($entity_id, $language) : $entity_id;
   }
 
