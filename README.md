@@ -1,0 +1,63 @@
+Search API Entity Translation
+========
+This module creates a multilingual node index for nodes translated
+by the Entity Translation module, which translates nodes on a field-by-field
+basis.
+
+Requirements
+------------
+This module requires that the following modules are also enabled:
+
+- [Entity Translation](https://github.com/backdrop-contrib/entity_translation)
+- [Search API](https://github.com/backdrop-contrib/search_api)
+- You'll probably need the [Search API ET DB](https://github.com/backdrop-contrib/search_api_et_db)
+  module as well in order to take advantage of this module.
+- If you're using solr, someone will need to port the Search API ET Solr
+  module from Drupal.
+
+
+Installation
+------------
+
+- Install this module using the official Backdrop CMS instructions at
+  https://docs.backdropcms.org/documentation/extend-with-modules.
+
+- Make sure you have a node type that's translated by Entity Translation
+
+- Visit the configuration page for the search index under 
+  Administration > Configuration > Search > Search API > Default multlingual
+  node index
+  admin/config/search/search_api/index/default_multilingual_node_index
+
+  Make sure you also have a search Server set up first as well
+
+
+Issues
+------
+
+Bugs and Feature Requests should be reported in the Issue Queue:
+https://github.com/backdrop-contrib/search_api_et
+
+
+Current Maintainers
+-------------------
+
+- [Benjamin Wheeler](https://github.com/bennybobw)
+
+
+Credits
+-------
+- Ported to Backdrop CMS by [Benjamin Wheeler](https://github.com/bennybobw).
+- Drupal maintainers:
+-- [danielnolde](https://www.drupal.org/u/danielnolde).
+-- [idebr](https://www.drupal.org/u/idebr).
+-- [maciej.zgadzaj](https://www.drupal.org/u/maciejzgadzaj).
+-- [thepanz](https://www.drupal.org/u/thepanz).
+- Drupal Search API Entity Translation v1 is sponsored by [wunderkraut](http://www.wunderkraut.com/).
+- Version 2.x was sponsored by [Commerce Guys](http://www.commerceguys.com/) and [Liip AG](http://www.liip.ch/).
+
+
+License
+-------
+This project is GPL v2 software.
+See the LICENSE.txt file in this directory for complete text.
