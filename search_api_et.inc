@@ -59,7 +59,7 @@ function search_api_et_item_languages_complete($entity, $entity_type) {
   $field_instances = field_info_instances($entity_type, $bundle);
 
   // Check the field values for every translation for this entity.
-  foreach (search_api_et_item_languages_entity($entity, $entity_type) as $language) {
+  foreach (search_api_et_item_languages_entity($entity, $entity_type) as $langcode) {
     foreach ($field_instances as $field_name => $field_instance) {
       $field_info = field_info_field($field_name);
 
@@ -71,7 +71,7 @@ function search_api_et_item_languages_complete($entity, $entity_type) {
       // Optional fields may be left blank, and the translation not stored: for
       // such fields the value of "$entity->{$field_name}[$language]" is empty
       // and we can not rely of such fields to spot a missing translation.
-      if ($field_instance['required'] && !isset($entity->{$field_name}[$language])) {
+      if ($field_instance['required'] && !isset($entity->{$field_name}[$langcode])) {
         // There is no language for this required field, skip to the next language.
         continue 2;
       }
@@ -79,7 +79,7 @@ function search_api_et_item_languages_complete($entity, $entity_type) {
 
     // Every translatable field has been translated for this language, add the
     // language to the return values.
-    $return[] = $language;
+    $return[] = $langcode;
   }
 
   // Return the languages that we found.

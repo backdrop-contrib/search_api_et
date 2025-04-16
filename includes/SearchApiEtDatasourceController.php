@@ -74,19 +74,19 @@ class SearchApiEtDatasourceController extends SearchApiEntityDataSourceControlle
     $items = array();
     foreach ($item_languages as $entity_id => $languages) {
       if (!empty($entities[$entity_id])) {
-        foreach ($languages as $language) {
+        foreach ($languages as $langcode) {
           // Following on the two cases described above, we should return
           // the same item IDs (with or without language prefix) as received.
           $entity = clone $entities[$entity_id];
-          $id = !empty($language) ? SearchApiEtHelper::buildItemId($entity_id, $language) : $entity_id;
+          $id = !empty($langcode) ? SearchApiEtHelper::buildItemId($entity_id, $langcode) : $entity_id;
           $entity->search_api_et_id = $id;
+          // Search API uses the language property still rather than langcode
           // Keep current entity language if language is NULL.
-          $entity->language = !is_null($language) ? $language : $entity->language;
+          $entity->language = !is_null($langcode) ? $langcode : $entity->langcode;
           $items[$id] = $entity;
         }
       }
     }
-
     return $items;
   }
 

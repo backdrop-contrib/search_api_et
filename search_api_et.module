@@ -6,6 +6,18 @@
  */
 
 /**
+ * Implements hook_autoload_info().
+ */
+function search_api_et_autoload_info() {
+  return [
+    'SearchApiEtDatasourceController' => 'includes/SearchApiEtDatasourceController.php',
+    'SearchApiEtHelper' => 'includes/SearchApiEtHelper.php',
+    'SearchApiEtPropertyInfoAlter' => 'includes/SearchApiEtPropertyInfoAlter.php',
+    'SearchApiEtViewsQuery' => 'includes/SearchApiEtViewsQuery.php',
+  ];
+}
+
+/**
  * Implements hook_views_api().
  */
 function search_api_et_views_api() {
@@ -24,7 +36,7 @@ function search_api_et_search_api_item_type_info() {
   module_load_include('php', 'search_api_et', 'includes/SearchApiEtHelper');
 
   $types = array();
-  foreach (entity_get_property_info() as $type => $property_info) {
+  foreach (entity_plus_get_property_info() as $type => $property_info) {
     if (($info = entity_get_info($type)) && field_has_translation_handler($type)) {
       $types[SearchApiEtHelper::getItemType($type)] = array(
         'name' => t('Multilingual !type', array('!type' => $info['label'])),
@@ -242,9 +254,9 @@ function search_api_et_languages($enabled_only = FALSE, $include_neutral = TRUE)
     }
     $name = t($lang->name);
     $native = $lang->native;
-    $languages[$lang->language] = ($name == $native) ? $name : $name . ' (' . $native . ')';
+    $languages[$lang->langcode] = ($name == $native) ? $name : $name . ' (' . $native . ')';
     if (!$enabled_only && !$lang->enabled) {
-      $languages[$lang->language] .= ' [' . t('disabled') . ']';
+      $languages[$lang->langcode] .= ' [' . t('disabled') . ']';
     }
   }
 
@@ -287,7 +299,7 @@ function search_api_et_item_languages($entity, $entity_type, SearchApiIndex $ind
   // entity is not translated, or if we are adding all the enabled languages to
   // the index.
   if (TRUE == $settings['restrict undefined']) {
-    $language = entity_language($entity_type, $entity);
+    $language = entity_plus_language($entity_type, $entity);
     if (($language != LANGUAGE_NONE || $settings['include'] == 'all')) {
       // $languages is an array, flipping to easily remove the LANGUAGE_NONE item.
       $languages = array_flip($languages);
@@ -305,7 +317,7 @@ function search_api_et_item_languages($entity, $entity_type, SearchApiIndex $ind
 function search_api_et_entity_update($entity, $entity_type) {
   // We only react on entity operations for types with property information, as
   // we don't provide search integration for the others.
-  if (!entity_get_property_info($entity_type)) {
+  if (!entity_plus_get_property_info($entity_type)) {
     return;
   }
 
@@ -313,7 +325,7 @@ function search_api_et_entity_update($entity, $entity_type) {
   $et_entity_type = SearchApiEtHelper::getItemType($entity_type);
 
   // Use the translation handler to fetch the main language of the entity.
-  // entity_language() together with entity_translation returns the current
+  // entity_plus_language() together with entity_translation returns the current
   // form language of an entity. Hence if the entity is translated the form
   // language usually differs from the main language - what would lead to the
   // removal of a valid tracking language.
@@ -327,8 +339,8 @@ function search_api_et_entity_update($entity, $entity_type) {
     $old_language = $translation_handler_original->getLanguage();
   }
   else {
-    $language = entity_language($entity_type, $entity);
-    $old_language = entity_language($entity_type, $entity->original);
+    $language = entity_plus_language($entity_type, $entity);
+    $old_language = entity_plus_language($entity_type, $entity->original);
   }
 
   // If the entity language has changed, remove the old item from the index.
@@ -346,7 +358,7 @@ function search_api_et_entity_update($entity, $entity_type) {
  */
 function search_api_et_entity_translation_insert($entity_type, $entity, $translation, $values = array()) {
   list($entity_id) = entity_extract_ids($entity_type, $entity);
-  $item_id = SearchApiEtHelper::buildItemId($entity_id, $translation['language']);
+  $item_id = SearchApiEtHelper::buildItemId($entity_id, $translation['langcode']);
 
   // Entity that has been loaded previously and cached is now stale, make sure
   // that subsequent loads will produce a fresh entity containing the inserted
@@ -361,7 +373,7 @@ function search_api_et_entity_translation_insert($entity_type, $entity, $transla
  */
 function search_api_et_entity_translation_update($entity_type, $entity, $translation, $values = array()) {
   list($entity_id) = entity_extract_ids($entity_type, $entity);
-  $item_id = SearchApiEtHelper::buildItemId($entity_id, $translation['language']);
+  $item_id = SearchApiEtHelper::buildItemId($entity_id, $translation['langcode']);
 
   search_api_track_item_change(SearchApiEtHelper::getItemType($entity_type), array($item_id));
 }
@@ -542,7 +554,13 @@ function search_api_et_features_export_alter(&$export, $module_name) {
 function search_api_et_search_api_index_items_alter(array &$items, SearchApiIndex $index) {
   $controller = search_api_get_datasource_controller($index->item_type);
   if ($controller instanceof SearchApiEtDatasourceController) {
-    foreach (element_children($items) as $item_id) {
+    $child_keys = [];
+    foreach ($items as $key => $value) {
+      if (is_int($key) || $key === '' || $key[0] !== '#') {
+        $child_keys[] = $key;
+      }
+    }
+    foreach ($child_keys as $item_id) {
       $items[$item_id]->search_api_index = $index;
     }
   }
