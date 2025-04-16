@@ -1,5 +1,9 @@
 Search API Entity Translation
 ========
+WARNING: This module should be considered alpha status and not ready
+for production sites, which is why there is currently not a release for it.
+Use at your own risk.
+
 This module creates a multilingual node index for nodes translated
 by the Entity Translation module, which translates nodes on a field-by-field
 basis.
