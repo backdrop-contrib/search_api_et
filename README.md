@@ -14,9 +14,9 @@ This module requires that the following modules are also enabled:
 
 - [Entity Translation](https://github.com/backdrop-contrib/entity_translation)
 - [Search API](https://github.com/backdrop-contrib/search_api)
-- You'll probably need the [Search API ET DB](https://github.com/backdrop-contrib/search_api_et_db)
-  module as well in order to take advantage of this module.
-- If you're using solr, someone will need to port the Search API ET Solr
+- One of the Search API server modules like search_api_db or search_api_solr
+- (Not required) [Search API ET DB](https://github.com/backdrop-contrib/search_api_et_db)
+  Fixes duplicate results/incorrect facet counts returned for translated entities.
   module from Drupal.
 
 
@@ -47,6 +47,8 @@ Current Maintainers
 -------------------
 
 - [Benjamin Wheeler](https://github.com/bennybobw)
+- [Anthony Nemirovsky](https://github.com/anemirovsky)
+- [Peter Haight](https://github.com/Dawnthorn)
 
 
 Credits
